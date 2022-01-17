@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "axios": "^0.24.0",
+    "dotenv": "^11.0.0",
+    "twit": "^2.2.11",
+    "twitter-api-v2": "^1.9.1"
+  }
+}
