@@ -11,12 +11,42 @@ const T = new Twit({
 
 const URL = "https://www.nostalgie.fr/chansons-diffusees.json?yesterday=0";
 
+const DEBUG = false;
+
 let formattedSong = "";
 let songs = [];
 let times = 0;
-let title = "";
 
-const tweet = () => {
+const tweet = (text, debug = true) => {
+  if (debug) {
+    console.log(text);
+    return;
+  }
+
+  T.post("statuses/update", {
+    status: text,
+    function(err, data, response) {
+      console.log(data);
+    },
+  });
+};
+
+const formatTitle = (song, from, to) => {
+  return song.charAt(0).toUpperCase() + song.slice(1).toLowerCase();
+};
+
+const getTime = () => {
+  const d = new Date();
+  const hr = d.getHours();
+  const min = d.getMinutes();
+  if (min < 10) {
+    min = "0" + min;
+  }
+
+  return hr + ":" + (min < 10 ? "0" + min : min);
+};
+
+const app = () => {
   axios
     .get(URL)
     .then(({ data }) => {
@@ -24,13 +54,9 @@ const tweet = () => {
         if (song.artist === "DANIEL BALAVOINE") {
           times += 1;
           if (song.title === "JE NE SUIS PAS UN HEROS C") {
-            formattedSong = title =
-              song.title.charAt(0).toUpperCase() +
-              song.title.slice(1, -2).toLowerCase();
+            formattedSong = formatTitle(song.title, 1, -2);
           } else {
-            title = formattedSong =
-              song.title.charAt(0).toUpperCase() +
-              song.title.slice(1).toLowerCase();
+            formattedSong = formatTitle(song.title, 1, 0);
           }
           songs.push(formattedSong);
         }
@@ -40,22 +66,25 @@ const tweet = () => {
         return self.indexOf(value) === index;
       });
 
-      uniqueSongs.splice(uniqueSongs.length - 1, 0, " et ");
+      uniqueSongs.splice(uniqueSongs.length - 1, 0, "et");
 
-      T.post("statuses/update", {
-        status: `Aujourd'hui Daniel Balavoine est passé ${times} fois sur radio Nostalgie avec les chansons ${uniqueSongs.join(
-          " "
-        )}`,
-        function(err, data, response) {
-          console.log(data);
-        },
-      });
-
-      console.log(uniqueSongs);
+      if (songs.length > 0) {
+        tweet(
+          `A ${getTime()}, Daniel Balavoine est passé ${times} fois sur radio Nostalgie aujourd'hui avec les chansons ${uniqueSongs.join(
+            " "
+          )}`,
+          DEBUG
+        );
+      } else {
+        tweet(
+          `Aujourd'hui Daniel Balavoine n'est passé sur radio Nostalgie`,
+          DEBUG
+        );
+      }
     })
     .catch((error) => {
       console.log(error);
     });
 };
 
-tweet();
+app();
