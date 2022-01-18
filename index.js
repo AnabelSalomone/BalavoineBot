@@ -32,7 +32,7 @@ const tweet = (text, debug = true) => {
 };
 
 const formatTitle = (song, from, to) => {
-  return song.charAt(0).toUpperCase() + song.slice(1).toLowerCase();
+  return song.charAt(0).toUpperCase() + song.slice(from, to).toLowerCase();
 };
 
 const getTime = () => {
@@ -54,9 +54,9 @@ const app = () => {
         if (song.artist === "DANIEL BALAVOINE") {
           times += 1;
           if (song.title === "JE NE SUIS PAS UN HEROS C") {
-            formattedSong = formatTitle(song.title, 1, -2);
+            formattedSong = `"${formatTitle(song.title, 1, -2)}"`;
           } else {
-            formattedSong = formatTitle(song.title, 1, 0);
+            formattedSong = `"${formatTitle(song.title, 1)}"`;
           }
           songs.push(formattedSong);
         }
@@ -70,7 +70,7 @@ const app = () => {
 
       if (songs.length > 0) {
         tweet(
-          `A ${getTime()}, Daniel Balavoine est passé ${times} fois sur radio Nostalgie aujourd'hui avec les chansons ${uniqueSongs.join(
+          `A ${getTime()}, Daniel Balavoine est passé ${times} fois sur radio Nostalgie ( @nostalgiefm )avec les chansons ${uniqueSongs.join(
             " "
           )}`,
           DEBUG
