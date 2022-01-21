@@ -11,7 +11,7 @@ const T = new Twit({
 
 const URL = "https://www.nostalgie.fr/chansons-diffusees.json?yesterday=0";
 
-const DEBUG = false;
+const DEBUG = true;
 
 let formattedSong = "";
 let songs = [];
@@ -66,18 +66,20 @@ const app = () => {
         return self.indexOf(value) === index;
       });
 
-      uniqueSongs.splice(uniqueSongs.length - 1, 0, "et");
+      if (uniqueSongs.length > 1) {
+        uniqueSongs.splice(uniqueSongs.length - 1, 0, "et");
+      }
 
       if (songs.length > 0) {
         tweet(
-          `A ${getTime()}, Daniel Balavoine est passé ${times} fois sur radio Nostalgie ( @nostalgiefm )avec les chansons ${uniqueSongs.join(
-            " "
-          )}`,
+          `Aujourd'hui et jusqu'à ${getTime()}, Daniel Balavoine est passé ${times} fois sur radio Nostalgie @nostalgiefm avec ${
+            uniqueSongs.length === 1 ? "la chanson" : "les chansons"
+          } ${uniqueSongs.join(" ")}`,
           DEBUG
         );
       } else {
         tweet(
-          `Aujourd'hui Daniel Balavoine n'est passé sur radio Nostalgie`,
+          `Daniel Balavoine n'est pas encore passé sur radio Nostalgie @nostalgiefm aujourd'hui`,
           DEBUG
         );
       }
